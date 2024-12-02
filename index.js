@@ -4,7 +4,9 @@ const mongoose = require('mongoose')
 const Product = require('./models/product.model')
 
 const app = express();
+
 app.use(express.json());
+app.use(express.urlencoded({extended: false}));
 
 mongoose.connect("mongodb+srv://USERNAME:PASSWORD@node-cluster-1.c9d6e.mongodb.net/nodedb?retryWrites=true&w=majority&appName=node-cluster-1")
 .then(() => {
@@ -66,3 +68,20 @@ app.put('/api/product/:id', async (req,res) => {
         res.status(500).json({message: error.message});
     }
 });
+
+
+app.delete('/api/product/:id', async (req,res) => {
+    try {
+        const {id} = req.params;
+        const product = await Product.findByIdAndDelete(id);
+        if(!product){
+            return res.status(404).json({message: "Product NOT Found"});
+        }
+        res.status(200).json({message: "Product Deleted Successfully"});
+    } catch (error) {
+        res.status(500).json({message: error.message});
+    }
+});
+
+
+
